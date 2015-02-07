@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+      html, body { height: 100%; margin: 0; padding: 0;}
+      #map-canvas {top: 100px; height: 100%; margin: 0; padding: 0;}
+    </style>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCMvK6Yy7j7JS-_FIw9u6uqFvy2AzctYe8">
+    </script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript" src="lib/underscore-min.js"></script>
+    <script type="text/javascript" src="lib/backbone-min.js"></script>
+    <script type="text/javascript">
+      var MapView = Backbone.View.extend({
+        initialize: function(opts) {
+          if (opts) {
+            this.center = opts.center;
+            this.zoom = opts.zoom;
+            this.container = opts.container;
+          }
+        },   
+
+        render: function() {
+          var mapOptions = {
+            center: this.center,
+            zoom: this.zoom 
+          };
+          var g_map = new google.maps.Map(this.container, mapOptions);
+        }
+      });
+      window.onload = function() {
+        var container = document.getElementById('map-canvas'),
+            coords = { lat: -34.397, lng: 150.644},
+            zoom = 8;
+        var map = new MapView({
+          container: container,
+          center: coords,
+          zoom: zoom
+        }); 
+        map.render();
+      }
+    </script>
+  </head>
+  <body>
+    <div id="controls"></div>
+    <div id="map-canvas"></div>
+  </body>
+</html>
