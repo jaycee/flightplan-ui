@@ -2,7 +2,9 @@
 <html>
   <head>
     <style type="text/css">
-      html, body { height: 100%; margin: 0; padding: 0;}
+      html, body, #page {
+        height: 100%; margin: 0; padding: 0;
+      }
       #map-canvas {top: 100px; height: 100%; margin: 0; padding: 0;}
     </style>
     <script type="text/javascript"
@@ -19,16 +21,24 @@
             coords = { lat: 36.002, lng: -78.906},
             zoom = 8;
         var map = new MapView({
-          container: container,
+          el: "#page",
           center: coords,
           zoom: zoom
-        }); 
+        });
         map.render();
       }
     </script>
   </head>
   <body>
-    <div id="controls"></div>
-    <div id="map-canvas"></div>
+    <div id="page">
+      <div id="controls">
+        <form id="nav">
+          <input type="text"/>
+          <input type="text"/>
+          <input type="submit"/>
+        </form>
+      </div>
+      <div id="map-canvas"></div>
+    </div>
   </body>
 </html>
