@@ -33,9 +33,27 @@
     <div id="page">
       <div id="controls">
         <form id="nav">
-          <input type="text"/>
-          <input type="text"/>
-          <input type="submit"/>
+          <ul>
+            <li>
+              <label>Origin (lat,lng):</label>
+              <input name="origin" type="text"/>
+            </li>
+            <li>
+              <label>Destination (lat,lng):</label>
+              <input name="destination" type="text"/>
+            </li>
+            <li>
+              <label>Speed (mph):</label>
+              <input name="speed" type="text"/>
+            </li>
+            <li>
+              <label>Update interval (in hours):</label>
+              <input name="forecast interval (hours)" type="text"/>
+            </li>
+            <li>
+              <input type="submit" value="Get forecast"/>
+            </li>
+          </ul>
         </form>
       </div>
       <div id="map-canvas"></div>

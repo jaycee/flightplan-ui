@@ -21,7 +21,8 @@ var MapView = Backbone.View.extend({
     }
     var src = e.target[0].value,
         dest = e.target[1].value,
-        speed = e.target[2].value;
+        speed = parseFloat(e.target[2].value, 10),
+        interval = parseFloat(e.target[3].value, 10);
 
     src = src.split(',');
     dest = dest.split(',');
@@ -38,8 +39,8 @@ var MapView = Backbone.View.extend({
       new google.maps.LatLng(src.lat, src.lng),
       new google.maps.LatLng(dest.lat, dest.lng)
     ];
-    //TODO don't hardcode speed and interval
-    var points = this.get_points(flightPathCoords[0], flightPathCoords[1], 60, 2)    
+    var points = this.get_points(
+        flightPathCoords[0], flightPathCoords[1], speed, interval);
     this.flightPath = new google.maps.Polyline({
       path: points,
       geodesic: true,
