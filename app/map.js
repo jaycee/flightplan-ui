@@ -48,12 +48,12 @@ var MapView = Backbone.View.extend({
       strokeWeight: 2
     });
     _.each(points, function(point) {
-      debugger;
-      var marker = new google.maps.Marker({
+      new google.maps.Marker({
           position: point,
-      })
-      marker.setMap(this.g_map);
-    });
+          map: this.g_map,
+          tooltip: 'Interval'
+      });
+    }, this);
     this.flightPath.setMap(this.g_map);
     this.g_map.setCenter(src);
   },
@@ -63,11 +63,13 @@ var MapView = Backbone.View.extend({
         src, dest, 3959);
     var interval_speed = speed * interval;
     var steps = parseInt(distance / interval_speed, 10);
-    var heading = google.maps.geometry.spherical.computeHeading(src, dest);
     var points = [src];
+    var start = src;
     for(var i=0; i<steps; i++) {
+      var heading = google.maps.geometry.spherical.computeHeading(start, dest);
       var point = google.maps.geometry.spherical.computeOffset(
-          src, interval_speed, 3959);
+          start, interval_speed, heading, 3959);
+      start = point;
       points.push(point);
     }
     points.push(dest);
