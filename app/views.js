@@ -1,3 +1,4 @@
+//TODO: break this out into view and model--it's getting a little messy.
 var MapView = Backbone.View.extend({
 
   id: 'page',
@@ -39,8 +40,12 @@ var MapView = Backbone.View.extend({
       new google.maps.LatLng(src.lat, src.lng),
       new google.maps.LatLng(dest.lat, dest.lng)
     ];
+
     var points = this.get_points(
         flightPathCoords[0], flightPathCoords[1], speed, interval);
+
+    this.get_forecast(points); 
+
     this.flightPath = new google.maps.Polyline({
       path: points,
       geodesic: true,
@@ -48,15 +53,27 @@ var MapView = Backbone.View.extend({
       strokeOpacity: 1.0,
       strokeWeight: 2
     });
-    _.each(points, function(point) {
-      new google.maps.Marker({
-          position: point,
-          map: this.g_map,
-          tooltip: 'Interval'
-      });
-    }, this);
+
+    new google.maps.Marker({
+        position: points[0],
+        map: this.g_map,
+    });
     this.flightPath.setMap(this.g_map);
     this.g_map.setCenter(src);
+  },
+
+  get_forecast: function(points) {
+    var coords = [];
+    for (var i=0; i<points.length; i++) {
+      coords.push(points[i].k);
+      coords.push(points[i].D);
+    }
+    coords = coords.join(',')
+    $.get('http://localhost:6543', {coords: coords}, this.do_stuff, 'jsonp');
+  },
+
+  do_stuff: function(data, statusText, xhr) {
+    this.forecasts = data.forecasts;
   },
 
   get_points: function(src, dest, speed, interval) {
