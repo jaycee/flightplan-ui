@@ -29,11 +29,11 @@
     <script type="text/javascript" src="lib/underscore-min.js"></script>
     <script type="text/javascript" src="lib/backbone-min.js"></script>
 
+    <script type="text/javascript" src="app/models.js"></script>
     <script type="text/javascript" src="app/views.js"></script>
     <script type="text/javascript">
       window.onload = function() {
-        var container = document.getElementById('map-canvas'),
-            coords = { lat: 36.002, lng: -78.906},
+        var coords = { lat: 36.002, lng: -78.906},  // Durham, NC. Got to start somewhere.
             zoom = 8;
         var map = new MapView({
           el: "#page",

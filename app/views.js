@@ -1,30 +1,28 @@
-//TODO: break this out into view and model--it's getting a little messy.
 var MapView = Backbone.View.extend({
 
   id: 'page',
   tagName: 'div',
   events: {
-    'submit #nav': 'update_args'
+    'submit #nav': 'updateArgs'
   },
 
-  initialize: function(opts) {
-    if (opts) {
-      this.center = opts.center;
-      this.zoom = opts.zoom;
-      this.container = opts.container;
+  initialize: function(args) {
+    if (args) {
+      this.center = args.center;
+      this.zoom = args.zoom;
     }
   },
 
-  update_args: function(e) {
+  updateArgs: function(e) {
     e.preventDefault();
     if (this.flightPath) {
       this.flightPath.setMap(null);
     }
+
     var src = e.target[0].value,
         dest = e.target[1].value,
         speed = parseFloat(e.target[2].value, 10),
         interval = parseFloat(e.target[3].value, 10);
-
     src = src.split(',');
     dest = dest.split(',');
     src = {
@@ -36,62 +34,30 @@ var MapView = Backbone.View.extend({
       lng:  parseFloat(dest[1])
     };
 
-    var flightPathCoords = [
-      new google.maps.LatLng(src.lat, src.lng),
-      new google.maps.LatLng(dest.lat, dest.lng)
-    ];
+    var fp = new FlightPlan({
+      origin: src,
+      destination: dest,
+      speed: speed,
+      interval: interval
+    });
 
-    var points = this.get_points(
-        flightPathCoords[0], flightPathCoords[1], speed, interval);
-
-    this.get_forecast(points); 
-
+    fp.calculateRoute();
     this.flightPath = new google.maps.Polyline({
-      path: points,
+      path: fp.get('forecasts'),
       geodesic: true,
       strokeColor: '#FF0000',
       strokeOpacity: 1.0,
       strokeWeight: 2
     });
 
+    var origin = fp.get('forecasts')[0];
     new google.maps.Marker({
-        position: points[0],
+        position: origin,
         map: this.g_map,
     });
     this.flightPath.setMap(this.g_map);
-    this.g_map.setCenter(src);
-  },
-
-  get_forecast: function(points) {
-    var coords = [];
-    for (var i=0; i<points.length; i++) {
-      coords.push(points[i].k);
-      coords.push(points[i].D);
-    }
-    coords = coords.join(',')
-    $.get('http://localhost:6543', {coords: coords}, this.do_stuff, 'jsonp');
-  },
-
-  do_stuff: function(data, statusText, xhr) {
-    this.forecasts = data.forecasts;
-  },
-
-  get_points: function(src, dest, speed, interval) {
-    var distance = google.maps.geometry.spherical.computeDistanceBetween(
-        src, dest, 3959);
-    var interval_speed = speed * interval;
-    var steps = parseInt(distance / interval_speed, 10);
-    var points = [src];
-    var start = src;
-    for(var i=0; i<steps; i++) {
-      var heading = google.maps.geometry.spherical.computeHeading(start, dest);
-      var point = google.maps.geometry.spherical.computeOffset(
-          start, interval_speed, heading, 3959);
-      start = point;
-      points.push(point);
-    }
-    points.push(dest);
-    return points;
+    this.g_map.setCenter(origin);
+    fp.getForecastData();
   },
 
   render: function() {
