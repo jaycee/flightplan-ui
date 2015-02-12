@@ -42,7 +42,9 @@ var FlightPlan = Backbone.Model.extend({
 
   getForecastData: function() {
     var coords = [],
-        route = this.get('route');
+        route = this.get('route'),
+        interval = this.get('interval');
+
 
     for (var i=0; i<route.length; i++) {
       coords.push(route[i].k);
@@ -51,7 +53,7 @@ var FlightPlan = Backbone.Model.extend({
     coords = coords.join(',');
     $.ajax({
       url: 'http://localhost:6543',
-      data: {coords: coords},
+      data: {coords: coords, interval: interval},
       success: this.updateForecastData,
       dataType: 'jsonp',
       context: this
