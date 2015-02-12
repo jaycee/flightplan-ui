@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Flightplan Forecasting</title>
     <style type="text/css">
       html, body, #page {
         height: 100%;
@@ -38,7 +39,8 @@
         var map = new MapView({
           el: "#page",
           center: coords,
-          zoom: zoom
+          zoom: zoom,
+          model: new FlightPlan(),
         });
         map.render();
       }

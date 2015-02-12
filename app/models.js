@@ -6,7 +6,8 @@ var FlightPlan = Backbone.Model.extend({
     destination: {lat: 0, lng: 0},
     speed: 550,  // average speed of a commercial airliner in mph
     interval: 1,  // in hours
-    forecasts: []
+    forecasts: [],
+    route: []
   },
 
   _convertLatLng: function(coordinate) {
@@ -25,7 +26,7 @@ var FlightPlan = Backbone.Model.extend({
     var interval_speed = speed * interval,
         steps = parseInt(distance / interval_speed, 10);
 
-    var forecasts = [origin],
+    var route = [origin],
         start = origin;
 
     for(var i=0; i<steps; i++) {
@@ -33,19 +34,19 @@ var FlightPlan = Backbone.Model.extend({
       var point = google.maps.geometry.spherical.computeOffset(
           start, interval_speed, heading, EARTH_RADIUS);
       start = point;
-      forecasts.push(point);
+      route.push(point);
     }
-    forecasts.push(destination);
-    this.set('forecasts', forecasts);
+    route.push(destination);
+    this.set('route', route);
   },
 
   getForecastData: function() {
     var coords = [],
-        forecasts = this.get('forecasts');
+        route = this.get('route');
 
-    for (var i=0; i<forecasts.length; i++) {
-      coords.push(forecasts[i].k);
-      coords.push(forecasts[i].D);
+    for (var i=0; i<route.length; i++) {
+      coords.push(route[i].k);
+      coords.push(route[i].D);
     }
     coords = coords.join(',');
     $.ajax({
@@ -59,5 +60,6 @@ var FlightPlan = Backbone.Model.extend({
 
   updateForecastData: function(data, statusText, xhr) {
     this.set('forecasts', data.forecasts);
+    this.trigger('forecastUpdated');
   }
 });

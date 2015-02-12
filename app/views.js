@@ -34,30 +34,16 @@ var MapView = Backbone.View.extend({
       lng:  parseFloat(dest[1])
     };
 
-    var fp = new FlightPlan({
+    this.model.set({
       origin: src,
       destination: dest,
       speed: speed,
       interval: interval
     });
 
-    fp.calculateRoute();
-    this.flightPath = new google.maps.Polyline({
-      path: fp.get('forecasts'),
-      geodesic: true,
-      strokeColor: '#FF0000',
-      strokeOpacity: 1.0,
-      strokeWeight: 2
-    });
-
-    var origin = fp.get('forecasts')[0];
-    new google.maps.Marker({
-        position: origin,
-        map: this.g_map,
-    });
-    this.flightPath.setMap(this.g_map);
-    this.g_map.setCenter(origin);
-    fp.getForecastData();
+    this.model.on('forecastUpdated', this.drawRoute, this);
+    this.model.calculateRoute();
+    this.model.getForecastData();
   },
 
   render: function() {
@@ -67,5 +53,23 @@ var MapView = Backbone.View.extend({
     };
     var container = this.$('#map-canvas')[0];
     this.g_map = new google.maps.Map(container, mapOptions);
+  },
+
+  drawRoute: function() {
+    var path = this.model.get('route');
+    this.flightPath = new google.maps.Polyline({
+      path: path,
+      geodesic: true,
+      strokeColor: '#FF0000',
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+
+    new google.maps.Marker({
+        position: path[0],
+        map: this.g_map,
+    });
+    this.flightPath.setMap(this.g_map);
+    this.g_map.setCenter(path[0]);
   }
 });
