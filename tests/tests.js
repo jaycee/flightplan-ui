@@ -39,6 +39,6 @@ describe("Flightplan", function() {
     fp._convertLatLng = sinon.stub().returns({lat: 0, lng: 0});
     fp.calculateRoute();
     // points should be origin, destination, and 10 steps based on mock values.
-    expect(fp.get('points').length).toBe(12)
+    expect(fp.get('route').length).toBe(12)
   });
 });
