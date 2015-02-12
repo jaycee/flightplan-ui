@@ -3,7 +3,10 @@ var MapView = Backbone.View.extend({
   id: 'page',
   tagName: 'div',
   events: {
-    'submit #nav': 'updateArgs'
+    'submit #nav': 'updateArgs',
+    'click a#prev': 'previousForecast',
+    'click a#next': 'nextForecast',
+    'click a#reset': 'reset'
   },
 
   initialize: function(args) {
@@ -53,6 +56,50 @@ var MapView = Backbone.View.extend({
     };
     var container = this.$('#map-canvas')[0];
     this.g_map = new google.maps.Map(container, mapOptions);
+    var template = _.template($("script#input_controls").html());
+    $('#controls').append(template());
+  },
+
+  nextForecast: function(e) {
+    e.preventDefault();
+    this.current_idx += 1;
+    this.showForecast();
+  },
+
+  previousForecast: function(e) {
+    e.preventDefault();
+    this.current_idx -= 1;
+    this.showForecast();
+  },
+
+  showForecast: function() {
+    if(this.marker) {
+      this.marker.setMap(null);
+    }
+    $('#controls').empty();
+    var template = _.template($("script#forecast_controls").html());
+    var route = this.model.get('route');
+    var forecastData = this.model.get('forecasts');
+    var point = route[this.current_idx];
+    var forecast = forecastData[this.current_idx][1];
+    var html = template({
+      lat: point.k.toFixed(3),
+      lng: point.D.toFixed(3),
+      temperature: forecast.temperature,
+      humidity: forecast.humidity,
+      windSpeed: forecast.windSpeed,
+      windBearing: forecast.windBearing,
+      precipProbability: forecast.precipProbability,
+      precipType: forecast.precipType,
+      isFirst: (this.current_idx === 0),
+      isLast: (this.current_idx === route.length - 1)
+    });
+    $('#controls').append(html);
+    this.marker = new google.maps.Marker({
+        position: point,
+        map: this.g_map,
+    });
+    this.g_map.setCenter(point);
   },
 
   drawRoute: function() {
@@ -65,11 +112,22 @@ var MapView = Backbone.View.extend({
       strokeWeight: 2
     });
 
-    new google.maps.Marker({
-        position: path[0],
-        map: this.g_map,
-    });
     this.flightPath.setMap(this.g_map);
-    this.g_map.setCenter(path[0]);
+    this.current_idx = 0;
+    this.showForecast();
+  },
+
+  reset: function(e) {
+    e.preventDefault();
+    if(this.marker) {
+      this.marker.setMap(null);
+    }
+    if(this.flightPath) {
+      this.flightPath.setMap(null);
+    }
+    $('#controls').empty();
+    var template = _.template($("script#input_controls").html());
+    $('#controls').append(template());
+    this.model.set(this.model.defaults);
   }
 });

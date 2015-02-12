@@ -19,8 +19,11 @@
         position: fixed;
         bottom: 0px;
         right: 0px;
-        width: 20%;
-        background-color: rgba(100,100,100,0.2);
+        width: 340px;
+        background-color: rgba(100,100,100,0.8);
+      }
+      #controls li {
+        list-style-type: none;
       }
     </style>
     <script type="text/javascript"
@@ -45,33 +48,56 @@
         map.render();
       }
     </script>
+    <script type="text/template" id="input_controls">
+
+      <form id="nav">
+        <ul>
+          <li>
+            <label>Origin (lat,lng):</label>
+            <input name="origin" type="text"/>
+          </li>
+          <li>
+            <label>Destination (lat,lng):</label>
+            <input name="destination" type="text"/>
+          </li>
+          <li>
+            <label>Speed (mph):</label>
+            <input name="speed" type="text"/>
+          </li>
+          <li>
+            <label>Update interval (in hours):</label>
+            <input name="forecast interval (hours)" type="text"/>
+          </li>
+          <li>
+            <input type="submit" value="Get forecast"/>
+          </li>
+        </ul>
+      </form>
+    </script>
+    <script type="text/template" id="forecast_controls">
+      <span>
+      <% if ( !isFirst ){ %>
+      <a href="#" id="prev">Previous</a>
+      <% } %>
+      <strong>Location</strong>:  <%= lat %>,<%= lng %></h3>
+      <% if ( !isLast ){ %>
+      <a href="#" id="next">Next</a>
+      <% } %>
+      </span>
+      <ul>
+        <li>Temperature: <%= temperature %></li>
+        <li>Humidity: <%= temperature %></li>
+        <li>Wind: <%= windSpeed %> at a bearing of <%= windBearing %></li>
+        <% if ( precipType ){ %>
+          <li>Precipitation: <%= precipProbability %> chance of <%= precipType %></li>
+        <% } %>
+      </ul>
+      <a href="#" id="reset">New route</a>
+    </script>
   </head>
   <body>
     <div id="page">
       <div id="controls">
-        <form id="nav">
-          <ul>
-            <li>
-              <label>Origin (lat,lng):</label>
-              <input name="origin" type="text"/>
-            </li>
-            <li>
-              <label>Destination (lat,lng):</label>
-              <input name="destination" type="text"/>
-            </li>
-            <li>
-              <label>Speed (mph):</label>
-              <input name="speed" type="text"/>
-            </li>
-            <li>
-              <label>Update interval (in hours):</label>
-              <input name="forecast interval (hours)" type="text"/>
-            </li>
-            <li>
-              <input type="submit" value="Get forecast"/>
-            </li>
-          </ul>
-        </form>
       </div>
       <div id="map-canvas"></div>
     </div>
