@@ -10,6 +10,6 @@ It's recommended you remove the tests library, though leaving it is harmless
 
 # Development
 
-To run it locally, run `make run`. You can check the app on `localhost:8000`
-To serve the tests, run `make test`. You can check the tests on
+To run it locally, run `make dev-server`. You can check the app on `localhost:8000`
+To serve the tests, run `make test-server`. You can check the tests on
 `localhost:3000/tests`.
